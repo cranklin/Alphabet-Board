@@ -1,0 +1,233 @@
+<html>
+    <head>
+        <title>Cranky's Alphabet Board</title>
+        <style>
+            td{
+                width:60px;
+                height:60px;
+                line-height:60px;
+                font-family:helvetica,arial;
+                text-align:center;
+            }
+        </style>
+        <script>
+            var celldata = new Array();
+            for(var i=1; i<=7; i++){
+                celldata[i] = new Array();
+            }
+            celldata[1][1] = "a";
+            celldata[1][2] = "b";
+            celldata[1][3] = "c";
+            celldata[1][4] = "d";
+            celldata[1][5] = "e";
+            celldata[1][6] = "f";
+            celldata[2][1] = "g";
+            celldata[2][2] = "h";
+            celldata[2][3] = "i";
+            celldata[2][4] = "j";
+            celldata[2][5] = "k";
+            celldata[2][6] = "l";
+            celldata[3][1] = "m";
+            celldata[3][2] = "n";
+            celldata[3][3] = "o";
+            celldata[3][4] = "p";
+            celldata[3][5] = "q";
+            celldata[3][6] = "r";
+            celldata[4][1] = "s";
+            celldata[4][2] = "t";
+            celldata[4][3] = "u";
+            celldata[4][4] = "v";
+            celldata[4][5] = "w";
+            celldata[4][6] = "x";
+            celldata[5][1] = "y";
+            celldata[5][2] = "z";
+            celldata[5][3] = "0";
+            celldata[5][4] = "1";
+            celldata[5][5] = "2";
+            celldata[5][6] = "3";
+            celldata[6][1] = "4";
+            celldata[6][2] = "5";
+            celldata[6][3] = "6";
+            celldata[6][4] = "7";
+            celldata[6][5] = "8";
+            celldata[6][6] = "9";
+            celldata[7][1] = ":space:";
+            celldata[7][2] = "yes";
+            celldata[7][3] = "no";
+            celldata[7][4] = ":reset:";
+            celldata[7][5] = ":done:";
+            celldata[7][6] = ":mode:";
+
+            var currentrow = 7;
+            var currentcolumn = 6;
+            var currentmode = 0;
+            var currentstring = "";
+            var selectanimation;
+            var resetcounter = 0;
+
+            document.onkeyup = KeyCheck;       
+
+            function KeyCheck(e)
+            {
+                var KeyID = (window.event) ? event.keyCode : e.keyCode;
+                if(KeyID>0){
+                    selectcell();
+                }
+            }
+
+            function shiftrow(){
+                document.getElementById("row"+currentrow).style.backgroundColor = "#ffffff";
+                if(currentrow<7){
+                    currentrow++;
+                }
+                else{
+                    currentrow = 1;
+                }
+                document.getElementById("row"+currentrow).style.backgroundColor = "#cecece";
+            }
+            
+            function shiftcolumn(){
+                if(resetcounter<12){
+                    if(currentrow>0){
+                        document.getElementById("row"+currentrow).style.backgroundColor = "#ffffff";
+                        document.getElementById("cell"+currentrow+currentcolumn).style.backgroundColor = "";
+                        if(currentcolumn<6){
+                            currentcolumn++;
+                        }
+                        else{
+                            currentcolumn = 1;
+                        }
+                        document.getElementById("cell"+currentrow+currentcolumn).style.backgroundColor = "#ff3300";
+                    }
+                    resetcounter++;
+                }
+                else{
+                    clearInterval(selectanimation);
+                    document.getElementById("cell"+currentrow+currentcolumn).style.backgroundColor = "";
+                    currentmode=0;
+                    currentrow=7;
+                    selectmode();
+                }
+            }
+
+            function selectcell(){
+                if(currentmode==0){
+                    clearInterval(selectanimation);
+                    currentcolumn = 6;
+                    selectanimation = setInterval("shiftcolumn()",1000);
+                    currentmode=1;
+                }
+                else{
+                    clearInterval(selectanimation);
+                    if(currentrow==7){
+                        switch(currentcolumn){
+                            case 1:
+                                document.getElementById("output").value += " ";
+                                break;
+                            case 2:
+                                document.getElementById("output").value = "yes";
+                                tts();
+                                break;
+                            case 3:
+                                document.getElementById("output").value = "no";
+                                tts();
+                                break;
+                            case 4:
+                                document.getElementById("output").value = "";
+                                break;
+                            case 5:
+                                tts();
+                                break;
+                            default:
+                        }
+                    }
+                    else{
+                        document.getElementById("output").value += celldata[currentrow][currentcolumn];
+                    }
+                    document.getElementById("cell"+currentrow+currentcolumn).style.backgroundColor = "";
+                    currentmode=0;
+                    currentrow=7;
+                    selectmode();
+                }
+            }
+
+            function selectmode(){
+                resetcounter = 0;
+                selectanimation = setInterval("shiftrow()",1000);
+            }
+
+            function tts(){
+                var ttsurl = "http://translate.google.com/translate_tts?tl=en&q="+document.getElementById("output").value;
+                document.getElementById("voiceframe").src = ttsurl;
+                document.getElementById("output").value="";
+            }
+
+            window.onload = function(){
+                selectmode();
+            }
+        </script>
+    </head>
+    <body>
+        <table align="center" border=1 cellspacing=0 cellpadding=0>
+            <tr id="row1">
+                <td id="cell11">A</td>
+                <td id="cell12">B</td>
+                <td id="cell13">C</td>
+                <td id="cell14">D</td>
+                <td id="cell15">E</td>
+                <td id="cell16">F</td>
+            </tr>
+            <tr id="row2">
+                <td id="cell21">G</td>
+                <td id="cell22">H</td>
+                <td id="cell23">I</td>
+                <td id="cell24">J</td>
+                <td id="cell25">K</td>
+                <td id="cell26">L</td>
+            </tr>
+            <tr id="row3">
+                <td id="cell31">M</td>
+                <td id="cell32">N</td>
+                <td id="cell33">O</td>
+                <td id="cell34">P</td>
+                <td id="cell35">Q</td>
+                <td id="cell36">R</td>
+            </tr>
+            <tr id="row4">
+                <td id="cell41">S</td>
+                <td id="cell42">T</td>
+                <td id="cell43">U</td>
+                <td id="cell44">V</td>
+                <td id="cell45">W</td>
+                <td id="cell46">X</td>
+            </tr>
+            <tr id="row5">
+                <td id="cell51">Y</td>
+                <td id="cell52">Z</td>
+                <td id="cell53">0</td>
+                <td id="cell54">1</td>
+                <td id="cell55">2</td>
+                <td id="cell56">3</td>
+            </tr>
+            <tr id="row6">
+                <td id="cell61">4</td>
+                <td id="cell62">5</td>
+                <td id="cell63">6</td>
+                <td id="cell64">7</td>
+                <td id="cell65">8</td>
+                <td id="cell66">9</td>
+            </tr>
+            <tr id="row7">
+                <td id="cell71">Space</td>
+                <td id="cell72">Yes</td>
+                <td id="cell73">No</td>
+                <td id="cell74">Clear</td>
+                <td id="cell75">Done</td>
+                <td id="cell76">Mode</td>
+            </tr>
+        </table>
+        <br />
+        <p align="center"><input type="text" name="output" id="output" value="" style="font-size:25px; width:700px;" READONLY /></p>
+        <iframe width="1px" height="1px" style="border:0px;" src="about:none" name="voiceframe" id="voiceframe"></iframe>
+    </body>
+</html>
