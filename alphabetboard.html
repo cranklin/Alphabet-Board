@@ -65,7 +65,13 @@
             var selectanimation;
             var resetcounter = 0;
 
-            document.onkeyup = KeyCheck;       
+            document.onkeyup = KeyCheck;
+            document.onmouseup = MouseClick;
+
+            function MouseClick()
+            {
+                selectcell();
+            }
 
             function KeyCheck(e)
             {
@@ -114,7 +120,7 @@
                 if(currentmode==0){
                     clearInterval(selectanimation);
                     currentcolumn = 6;
-                    selectanimation = setInterval("shiftcolumn()",1000);
+                    selectanimation = setInterval("shiftcolumn()",700);
                     currentmode=1;
                 }
                 else{
@@ -153,7 +159,7 @@
 
             function selectmode(){
                 resetcounter = 0;
-                selectanimation = setInterval("shiftrow()",1000);
+                selectanimation = setInterval("shiftrow()",700);
             }
 
             function tts(){
