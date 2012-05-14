@@ -67,6 +67,7 @@
 
             document.onkeyup = KeyCheck;
             document.onmouseup = MouseClick;
+            //document.onclick = MouseClick;
             document.ontouchend = MouseClick;
 
             function MouseClick()
@@ -165,7 +166,13 @@
 
             function tts(){
                 var ttsurl = "http://translate.google.com/translate_tts?tl=en&q="+document.getElementById("output").value;
-                document.getElementById("voiceframe").src = ttsurl;
+                var userAgent = window.navigator.userAgent;
+                if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
+                    window.location = ttsurl;
+                }
+                else{
+                    document.getElementById("voiceframe").src = ttsurl;
+                }
                 document.getElementById("output").value="";
             }
 
