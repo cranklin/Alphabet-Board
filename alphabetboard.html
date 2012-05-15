@@ -2,11 +2,13 @@
     <head>
         <title>Cranky's Alphabet Board</title>
         <style>
+            body{
+                font-family:helvetica,arial;
+            }
             td{
                 width:60px;
                 height:60px;
                 line-height:60px;
-                font-family:helvetica,arial;
                 text-align:center;
             }
         </style>
@@ -182,6 +184,7 @@
         </script>
     </head>
     <body>
+        <h2 align="center">Cranky's Alphabet Board</h2>
         <table align="center" border=1 cellspacing=0 cellpadding=0>
             <tr id="row1">
                 <td id="cell11">A</td>
@@ -243,5 +246,6 @@
         <br />
         <p align="center"><input type="text" name="output" id="output" value="" style="font-size:25px; width:700px;" READONLY /></p>
         <iframe width="1px" height="1px" style="border:0px;" src="about:none" name="voiceframe" id="voiceframe"></iframe>
+        <p align="center">Click or press any key when the correct row is selected... then click or press any key again when the correct letter is selected.  If you are on an iphone or ipad, just touch anywhere on the screen to select the current row or column.  When you are finished, select "DONE" and it will speak it for you.</p>
     </body>
 </html>
