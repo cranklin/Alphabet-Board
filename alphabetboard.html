@@ -1,251 +1,219 @@
 <html>
-    <head>
-        <title>Cranky's Alphabet Board</title>
-        <style>
-            body{
-                font-family:helvetica,arial;
-            }
-            td{
-                width:60px;
-                height:60px;
-                line-height:60px;
-                text-align:center;
-            }
-        </style>
-        <script>
-            var celldata = new Array();
-            for(var i=1; i<=7; i++){
-                celldata[i] = new Array();
-            }
-            celldata[1][1] = "a";
-            celldata[1][2] = "b";
-            celldata[1][3] = "c";
-            celldata[1][4] = "d";
-            celldata[1][5] = "e";
-            celldata[1][6] = "f";
-            celldata[2][1] = "g";
-            celldata[2][2] = "h";
-            celldata[2][3] = "i";
-            celldata[2][4] = "j";
-            celldata[2][5] = "k";
-            celldata[2][6] = "l";
-            celldata[3][1] = "m";
-            celldata[3][2] = "n";
-            celldata[3][3] = "o";
-            celldata[3][4] = "p";
-            celldata[3][5] = "q";
-            celldata[3][6] = "r";
-            celldata[4][1] = "s";
-            celldata[4][2] = "t";
-            celldata[4][3] = "u";
-            celldata[4][4] = "v";
-            celldata[4][5] = "w";
-            celldata[4][6] = "x";
-            celldata[5][1] = "y";
-            celldata[5][2] = "z";
-            celldata[5][3] = "0";
-            celldata[5][4] = "1";
-            celldata[5][5] = "2";
-            celldata[5][6] = "3";
-            celldata[6][1] = "4";
-            celldata[6][2] = "5";
-            celldata[6][3] = "6";
-            celldata[6][4] = "7";
-            celldata[6][5] = "8";
-            celldata[6][6] = "9";
-            celldata[7][1] = ":space:";
-            celldata[7][2] = "yes";
-            celldata[7][3] = "no";
-            celldata[7][4] = ":reset:";
-            celldata[7][5] = ":done:";
-            celldata[7][6] = ":mode:";
+<head>
+<title>Cranky's Alphabet Board</title>
+<style>
+body{
+    font-family:helvetica,arial;
+}
+td{
+	width:60px;
+	height:60px;
+	line-height:60px;
+	text-align:center;
+}
 
-            var currentrow = 7;
-            var currentcolumn = 6;
-            var currentmode = 0;
-            var currentstring = "";
-            var selectanimation;
-            var resetcounter = 0;
+td,tr {
+	backgronud: #ffffff;
+}
+td.selected {
+	background: #ff3300;
+}
+tr.selected {
+	background: #cecece;
+}
+</style>
+<script>
+// delcare all our vars and functions in our own scope/closure so it doesn't
+// interfere with the outside world and vice versa
+!function() {
 
-            document.onkeyup = KeyCheck;
-            document.onmouseup = MouseClick;
-            //document.onclick = MouseClick;
-            document.ontouchend = MouseClick;
+// time to wait before moving to the next row/column, in ms
+var shift_delay_ms = 700;
 
-            function MouseClick()
-            {
-                selectcell();
-            }
+// the amount of time to let pass before resetting the selection, in seconds
+// this allows the user to 'back out' of a selection if he/she made
+// a mistake
+var resetTimeout_s = 12;
 
-            function KeyCheck(e)
-            {
-                var KeyID = (window.event) ? event.keyCode : e.keyCode;
-                if(KeyID>0){
-                    selectcell();
-                }
-            }
+// text to display for each grid
+// note the last row is reserved for special functions and text shortcuts
+var celldata = [];
+celldata[0] = 'ABCDEF'.split('');
+celldata[1] = 'GHIJKL'.split('');
+celldata[2] = 'MNOPQR'.split('');
+celldata[3] = 'STUVWX'.split('');
+celldata[4] = 'YZ0123'.split('');
+celldata[5] = '456789'.split('');
+celldata[6] = 'Space,Yes,No,Clear,Done,Mode'.split(',');
 
-            function shiftrow(){
-                document.getElementById("row"+currentrow).style.backgroundColor = "#ffffff";
-                if(currentrow<7){
-                    currentrow++;
-                }
-                else{
-                    currentrow = 1;
-                }
-                document.getElementById("row"+currentrow).style.backgroundColor = "#cecece";
-            }
-            
-            function shiftcolumn(){
-                if(resetcounter<12){
-                    if(currentrow>0){
-                        document.getElementById("row"+currentrow).style.backgroundColor = "#ffffff";
-                        document.getElementById("cell"+currentrow+currentcolumn).style.backgroundColor = "";
-                        if(currentcolumn<6){
-                            currentcolumn++;
-                        }
-                        else{
-                            currentcolumn = 1;
-                        }
-                        document.getElementById("cell"+currentrow+currentcolumn).style.backgroundColor = "#ff3300";
-                    }
-                    resetcounter++;
-                }
-                else{
-                    clearInterval(selectanimation);
-                    document.getElementById("cell"+currentrow+currentcolumn).style.backgroundColor = "";
-                    currentmode=0;
-                    currentrow=7;
-                    selectmode();
-                }
-            }
+// name of the selected css class
+var selClassName = 'selected';
 
-            function selectcell(){
-                if(currentmode==0){
-                    clearInterval(selectanimation);
-                    currentcolumn = 6;
-                    selectanimation = setInterval("shiftcolumn()",700);
-                    currentmode=1;
-                }
-                else{
-                    clearInterval(selectanimation);
-                    if(currentrow==7){
-                        switch(currentcolumn){
-                            case 1:
-                                document.getElementById("output").value += " ";
-                                break;
-                            case 2:
-                                document.getElementById("output").value = "yes";
-                                tts();
-                                break;
-                            case 3:
-                                document.getElementById("output").value = "no";
-                                tts();
-                                break;
-                            case 4:
-                                document.getElementById("output").value = "";
-                                break;
-                            case 5:
-                                tts();
-                                break;
-                            default:
-                        }
-                    }
-                    else{
-                        document.getElementById("output").value += celldata[currentrow][currentcolumn];
-                    }
-                    document.getElementById("cell"+currentrow+currentcolumn).style.backgroundColor = "";
-                    currentmode=0;
-                    currentrow=7;
-                    selectmode();
-                }
-            }
+var rows = [];
+var cells = [];
+var out;
+var currentrow = 0;
+var currentcolumn = 0;
+var currentmode = 0;
+var currentstring = "";
+var selectanimation;
+// a cell selection time out.  what if the user made a mistake and needs to
+// 'undo'?  when the reset counter rolls over, the grid selection starts over
+var resetcounter = 0;
 
-            function selectmode(){
-                resetcounter = 0;
-                selectanimation = setInterval("shiftrow()",700);
-            }
+function MouseClick() {nextSelectMode();}
 
-            function tts(){
-                var ttsurl = "http://translate.google.com/translate_tts?tl=en&q="+document.getElementById("output").value;
-                var userAgent = window.navigator.userAgent;
-                if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
-                    window.location = ttsurl;
-                }
-                else{
-                    document.getElementById("voiceframe").src = ttsurl;
-                }
-                document.getElementById("output").value="";
-            }
+function KeyCheck(e) {
+	var KeyID = (window.event) ? event.keyCode : e.keyCode;
+	if(KeyID>0) {nextSelectMode();}
+}
 
-            window.onload = function(){
-                selectmode();
-            }
-        </script>
-    </head>
-    <body>
-        <h2 align="center">Cranky's Alphabet Board</h2>
-        <table align="center" border=1 cellspacing=0 cellpadding=0>
-            <tr id="row1">
-                <td id="cell11">A</td>
-                <td id="cell12">B</td>
-                <td id="cell13">C</td>
-                <td id="cell14">D</td>
-                <td id="cell15">E</td>
-                <td id="cell16">F</td>
-            </tr>
-            <tr id="row2">
-                <td id="cell21">G</td>
-                <td id="cell22">H</td>
-                <td id="cell23">I</td>
-                <td id="cell24">J</td>
-                <td id="cell25">K</td>
-                <td id="cell26">L</td>
-            </tr>
-            <tr id="row3">
-                <td id="cell31">M</td>
-                <td id="cell32">N</td>
-                <td id="cell33">O</td>
-                <td id="cell34">P</td>
-                <td id="cell35">Q</td>
-                <td id="cell36">R</td>
-            </tr>
-            <tr id="row4">
-                <td id="cell41">S</td>
-                <td id="cell42">T</td>
-                <td id="cell43">U</td>
-                <td id="cell44">V</td>
-                <td id="cell45">W</td>
-                <td id="cell46">X</td>
-            </tr>
-            <tr id="row5">
-                <td id="cell51">Y</td>
-                <td id="cell52">Z</td>
-                <td id="cell53">0</td>
-                <td id="cell54">1</td>
-                <td id="cell55">2</td>
-                <td id="cell56">3</td>
-            </tr>
-            <tr id="row6">
-                <td id="cell61">4</td>
-                <td id="cell62">5</td>
-                <td id="cell63">6</td>
-                <td id="cell64">7</td>
-                <td id="cell65">8</td>
-                <td id="cell66">9</td>
-            </tr>
-            <tr id="row7">
-                <td id="cell71">Space</td>
-                <td id="cell72">Yes</td>
-                <td id="cell73">No</td>
-                <td id="cell74">Clear</td>
-                <td id="cell75">Done</td>
-                <td id="cell76">Mode</td>
-            </tr>
-        </table>
-        <br />
-        <p align="center"><input type="text" name="output" id="output" value="" style="font-size:25px; width:700px;" READONLY /></p>
-        <iframe width="1px" height="1px" style="border:0px;" src="about:none" name="voiceframe" id="voiceframe"></iframe>
-        <p align="center">Click or press any key when the correct row is selected... then click or press any key again when the correct letter is selected.  If you are on an iphone or ipad, just touch anywhere on the screen to select the current row or column.  When you are finished, select "DONE" and it will speak it for you.</p>
-    </body>
+function shiftrow() {
+	rows[currentrow].classList.remove(selClassName);
+	currentrow = ++currentrow % rows.length;
+	rows[currentrow].classList.add(selClassName);
+}
+
+function shiftcolumn() {
+	// back out of the selection mode if the user waits
+	if (++resetcounter >= resetTimeout_s) {startRowSelect();}
+	//  otherwise, business as usual, select cells
+	else {
+		cells[currentrow][currentcolumn].classList.remove(selClassName);
+		currentcolumn = ++currentcolumn % cells[currentrow].length;
+		cells[currentrow][currentcolumn].classList.add(selClassName);
+	}
+}
+
+function nextSelectMode() {
+	// selected row, now start selecting cell
+	if(currentmode==0){startCellSelect();}
+	// selected cell, process output
+	// then move back to selecting rows
+	else{
+		clearInterval(selectanimation);
+		// the last row has special behavior
+		if(currentrow == (rows.length - 1)) {
+			switch(currentcolumn){
+				// add a space button
+				case 0:
+					out.value += " ";
+					break;
+				// quick 'yes' button
+				case 1:
+					out.value = "yes";
+					tts();
+					break;
+				// quick 'no' button
+				case 2:
+					out.value = "no";
+					tts();
+					break;
+				// clear output button
+				case 3:
+					out.value = "";
+					break;
+				// process output to google tts
+				case 4:
+					// if the option value is empty, don't tts
+					if (out.value.length > 0) tts();
+					break;
+				default:
+			}
+		}
+		// all other rows are just normal letter/number additions
+		else {
+			out.value += celldata[currentrow][currentcolumn];
+		}
+		
+		// clear selections
+		rows[currentrow].classList.remove(selClassName);
+		cells[currentrow][currentcolumn].classList.remove(selClassName);
+		// set mode back to row selection
+		currentmode = 0;
+		// start up row selection again
+		startRowSelect();
+	}
+}
+
+function startCellSelect() {
+	if (selectanimation) clearInterval(selectanimation);
+	
+	currentmode = 1; // column selection mode
+	
+	currentcolumn = 0;
+	cells[currentrow][currentcolumn].classList.add(selClassName);
+	
+	selectanimation = setInterval(shiftcolumn, shift_delay_ms);
+}
+
+function startRowSelect() {
+	if (selectanimation) clearInterval(selectanimation);
+	
+	resetcounter = 0;
+	currentmode = 0; // row selection mode
+	
+	cells[currentrow][currentcolumn].classList.remove(selClassName);
+	rows[currentrow].classList.add(selClassName);
+	
+	selectanimation = setInterval(shiftrow, shift_delay_ms);
+}
+
+// send the output value to google tts and load in invisible iframe
+// to play text audio
+function tts(){
+	var ttsurl = "http://translate.google.com/translate_tts?tl=en&q=" + out.value;
+	var userAgent = window.navigator.userAgent;
+	if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
+		window.location = ttsurl;
+	}
+	else{
+		document.getElementById("voiceframe").src = ttsurl;
+	}
+	out.value="";
+}
+
+// init setup function
+window.addEventListener('load', function() {
+	// setup and create the rows and columns
+	var tbl = document.getElementById('grid');
+	for (var i = 0; i < celldata.length; ++i) {
+		rows[i] = document.createElement('tr');
+		cells[i] = [];
+		tbl.appendChild(rows[i]);
+		
+		for (var j = 0; j < celldata[i].length; ++j) {
+			cells[i][j] = document.createElement('td');
+			cells[i][j].innerHTML = celldata[i][j];
+			rows[i].appendChild(cells[i][j]);
+		}
+	}
+	
+	// output box
+	out = document.getElementById('output');
+	
+	// setup event listeners
+	document.addEventListener('keyup', KeyCheck);
+	document.addEventListener('mouseup', MouseClick);
+	//document.onclick = MouseClick;
+	document.addEventListener('touchend', MouseClick);
+	
+	// start the grid selection
+	startRowSelect();
+});
+
+}();
+</script>
+</head>
+
+<body>
+	<h2 align="center">Cranky's Alphabet Board</h2>
+	<table id ='grid' align="center" border=1 cellspacing=0 cellpadding=0>
+	</table>
+	<br />
+	<p align="center"><input type="text" name="output" id="output" value="" style="font-size:25px; width:700px;" READONLY /></p>
+	<iframe width="1px" height="1px" style="border:0px;" src="about:none" name="voiceframe" id="voiceframe"></iframe>
+	<p align="center">Click or press any key when the correct row is selected... then click or press any key again when the correct letter is selected.  If you are on an iphone or ipad, just touch anywhere on the screen to select the current row or column.  When you are finished, select "DONE" and it will speak it for you.</p>
+</body>
+
 </html>
