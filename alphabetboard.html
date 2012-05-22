@@ -123,7 +123,7 @@ function nextSelectMode() {
 		}
 		// all other rows are just normal letter/number additions
 		else {
-			out.value += celldata[currentrow][currentcolumn];
+			out.value += celldata[currentrow][currentcolumn].toLowerCase();
 		}
 		
 		// clear selections
